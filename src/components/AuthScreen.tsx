@@ -33,6 +33,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
   const [otpCode, setOtpCode] = useState('');
   const [generatedOtp, setGeneratedOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
+  const [phoneSubmitting, setPhoneSubmitting] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
   const [googlePassword, setGooglePassword] = useState('');
   const [phonePassword, setPhonePassword] = useState('');
