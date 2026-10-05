@@ -1,0 +1,229 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --clay-base: #c5d2dc;
+    --clay-light: #e5f0fa;
+    --clay-shadow: #9eafbe;
+    --clay-dark-shadow: #889ba9;
+    --clay-inset-light: rgba(255, 255, 255, 0.7);
+    --clay-inset-dark: rgba(144, 163, 178, 0.45);
+    --clay-accent-cyan: #5fa5b8;
+    --clay-text-primary: #304557;
+    --clay-text-secondary: #657b90;
+    --clay-text-muted: #8195a6;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--clay-base);
+    color: #3f556b;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+}
+
+/* Raised Neumorphic Clay Elements */
+.clay-surface {
+  background: linear-gradient(145deg, #d0dde8, #bccad4);
+  box-shadow: 
+    10px 10px 20px #a4b5c4,
+    -10px -10px 20px #e6f1fa;
+}
+
+.clay-surface-sm {
+  background: linear-gradient(145deg, #cedbe6, #bcc9d4);
+  box-shadow: 
+    6px 6px 14px #a8b9c8,
+    -6px -6px 14px #e2edf6;
+}
+
+.clay-surface-sm-hover {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.clay-surface-sm-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: 
+    8px 8px 16px #9fb1c1,
+    -8px -8px 16px #eaf4fc;
+}
+
+.clay-surface-sm-hover:active {
+  transform: scale(0.96);
+  box-shadow: 
+    inset 2px 2px 4px #a8b9c8,
+    inset -2px -2px 4px #e2edf6;
+}
+
+.clay-card-pill {
+  background: linear-gradient(145deg, #cbd8e3, #b8c6d1);
+  box-shadow: 
+    8px 8px 16px #a6b7c6,
+    -8px -8px 16px #e4f0fa,
+    inset 1px 1px 1px rgba(255, 255, 255, 0.6);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.clay-card-pill:hover {
+  background: linear-gradient(145deg, #d2dfeb, #bdcbd6);
+}
+
+.clay-card-pill:active {
+  transform: scale(0.985);
+  box-shadow: 
+    3px 3px 8px #a6b7c6,
+    -3px -3px 8px #e4f0fa,
+    inset 2px 2px 4px rgba(144, 163, 178, 0.3);
+}
+
+/* Inset Debossed Input Fields */
+.clay-inset {
+  background: #bdcad4;
+  box-shadow: 
+    inset 4px 4px 8px #9fadba,
+    inset -4px -4px 8px #dce7f0;
+}
+
+.clay-inset:focus-within {
+  box-shadow: 
+    inset 5px 5px 10px #97a5b1,
+    inset -5px -5px 10px #e1ecf5,
+    0 0 0 2px rgba(95, 165, 184, 0.45);
+}
+
+.clay-inset-deep {
+  background: #b5c3cd;
+  box-shadow: 
+    inset 6px 6px 12px #94a3af,
+    inset -6px -6px 12px #d6e2eb;
+}
+
+/* Tactile Badge / Circular Icon */
+.clay-badge {
+  background: linear-gradient(135deg, #d3e1ec, #b6c4cf);
+  box-shadow: 
+    4px 4px 9px #a7b7c5,
+    -4px -4px 9px #e3eef8,
+    inset 1px 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.clay-badge-active {
+  background: linear-gradient(135deg, #5fb5c9, #478ea0);
+  box-shadow: 
+    inset 2px 2px 4px rgba(0, 0, 0, 0.2),
+    0 2px 6px rgba(71, 142, 160, 0.35);
+  color: white;
+}
+
+/* Debossed Text Effect */
+.text-debossed {
+  color: #3b5064;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.7), -1px -1px 1px rgba(140, 159, 173, 0.4);
+}
+
+.text-subtle-debossed {
+  color: #657b90;
+  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.6);
+}
+
+/* Vibrant Cyan Teal Button */
+.clay-button-cyan {
+  background: linear-gradient(145deg, #66b5c9, #4b8d9f);
+  box-shadow: 
+    6px 6px 14px #9cb2c1,
+    -5px -5px 12px #dff0fb,
+    inset 1px 1px 2px rgba(255, 255, 255, 0.5);
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: all 0.15s ease;
+}
+
+.clay-button-cyan:hover {
+  background: linear-gradient(145deg, #6ec0d4, #5398aa);
+}
+
+.clay-button-cyan:active {
+  transform: scale(0.97);
+  box-shadow: 
+    2px 2px 6px #9cb2c1,
+    -2px -2px 6px #dff0fb,
+    inset 2px 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* Clay Tag / Secondary Indicator */
+.clay-tag {
+  background: linear-gradient(145deg, #cde0e7, #b2c8cf);
+  box-shadow: 
+    3px 3px 7px #a4b6bf,
+    -3px -3px 7px #e4f3fa;
+}
+
+/* Custom Range Slider for Clay Aesthetics */
+input[type="range"].clay-range {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"].clay-range::-webkit-slider-runnable-track {
+  background: #b5c3ce;
+  box-shadow: inset 2px 2px 4px #98a7b3, inset -2px -2px 4px #dce8f2;
+  height: 8px;
+  border-radius: 9999px;
+}
+
+input[type="range"].clay-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -6px;
+  background: linear-gradient(135deg, #ffffff, #c2d2de);
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  box-shadow: 
+    3px 3px 6px #9db0c0,
+    -3px -3px 6px #ffffff,
+    inset 1px 1px 1px rgba(255, 255, 255, 0.9);
+  transition: transform 0.1s ease;
+}
+
+input[type="range"].clay-range::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+input[type="range"].clay-range::-webkit-slider-thumb:active {
+  transform: scale(0.92);
+  background: #5fa5b8;
+}
+
+/* Pulsing audio ripple animation */
+@keyframes clay-pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+}
+
+.animate-clay-pulse {
+  animation: clay-pulse 3s infinite ease-in-out;
+}
+
+/* Subtle App Clay Frame for iOS Viewport */
+.iphone-frame {
+  max-width: 430px;
+  min-height: 100vh;
+  margin: 0 auto;
+}

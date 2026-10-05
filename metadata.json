@@ -1,0 +1,6 @@
+{
+  "name": "Aether Space - Tactile Sound & Mind",
+  "description": "Claymorphic tactile sound, spatial audio, and mindfulness experience with soothing soundscapes and interactive haptic controls.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
