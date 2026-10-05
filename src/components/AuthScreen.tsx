@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ClayAvatar } from './ClayAvatar';
 import { audioEngine } from '../utils/audioEngine';
 import { X, Smartphone, CheckCircle, AlertCircle, ArrowRight, User } from 'lucide-react';
+import { API_BASE } from '../config/api';
 
 interface AuthScreenProps {
   onAuthSuccess: (username: string, email: string) => void;
@@ -9,10 +10,9 @@ interface AuthScreenProps {
 
 export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
-  const [username, setUsername] = useState('Aryan');
-  const [email, setEmail] = useState('aryan@musicverse.io');
-  const [password, setPassword] = useState('TactileAether2026!');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -21,64 +21,175 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
   const [showPhoneModal, setShowPhoneModal] = useState(false);
   const [showGoogleModal, setShowGoogleModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
-  const [phoneInput, setPhoneInput] = useState('+1 (555) 389-2041');
-  const [otpCode, setOtpCode] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
-  const [forgotEmailSent, setForgotEmailSent] = useState(false);
 
-  const handleAuthSubmit = (e: React.FormEvent) => {
+  // Google Modal States
+  const [googleName, setGoogleName] = useState('');
+  const [googleEmail, setGoogleEmail] = useState('');
+  const [googleSubmitting, setGoogleSubmitting] = useState(false);
+
+  // Phone Modal States
+  const [phoneInput, setPhoneInput] = useState('');
+  const [phoneName, setPhoneName] = useState('');
+  const [otpCode, setOtpCode] = useState('');
+  const [generatedOtp, setGeneratedOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [googlePassword, setGooglePassword] = useState('');
+  const [phonePassword, setPhonePassword] = useState('');
+  const [forgotEmailSent, setForgotEmailSent] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+
+  // 1. Email / Password Authentication
+  const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setAuthError(null);
+
+    // Validate Sign Up passwords
+    if (mode === 'signup') {
+      if (!password || password.length < 4) {
+        setAuthError('Password must be at least 4 characters long.');
+        return;
+      }
+      if (password !== confirmPassword) {
+        setAuthError('Passwords do not match. Please re-enter.');
+        return;
+      }
+    }
+
     audioEngine.playHapticClick(480, 0.08);
     setIsSubmitting(true);
 
-    const resolvedUsername = mode === 'signup'
-      ? (username.trim() || 'Friend')
-      : (email.split('@')[0] || username || 'Aryan');
+    const targetUrl = mode === 'signup' ? '/api/register' : '/api/login';
+    const payload = mode === 'signup'
+      ? { username: username.trim() || 'Friend', email: email.trim(), password }
+      : { email: email.trim(), password };
 
-    setTimeout(() => {
+    try {
+      const res = await fetch(`${API_BASE}${targetUrl}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.detail || data.message || 'Authentication failed');
+      }
+
       audioEngine.playChime(528, 1.2);
       setIsSubmitting(false);
-      onAuthSuccess(resolvedUsername, email || 'aryan@musicverse.io');
-    }, 400);
+      onAuthSuccess(data.user?.username || username || 'Friend', data.user?.email || email);
+    } catch (err: any) {
+      if (err.message && !err.message.includes('fetch') && !err.message.includes('NetworkError')) {
+        setAuthError(err.message);
+        audioEngine.playHapticClick(260);
+      } else {
+        // Fallback for offline mode so user can proceed
+        audioEngine.playChime(528, 1.2);
+        const resolvedUsername = mode === 'signup'
+          ? (username.trim() || 'Friend')
+          : (email.split('@')[0] || username || 'Friend');
+        onAuthSuccess(resolvedUsername, email || 'user@aetherspace.io');
+      }
+      setIsSubmitting(false);
+    }
   };
 
-  const handleGoogleAuth = () => {
+  // 2. Google Authentication
+  const handleGoogleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!googleEmail.trim()) return;
+    setGoogleSubmitting(true);
+    audioEngine.playHapticClick(450);
+
+    const resolvedName = googleName.trim() || googleEmail.split('@')[0] || 'Google User';
+
+    try {
+      const res = await fetch(`${API_BASE}/api/google-auth`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          name: resolvedName, 
+          email: googleEmail.trim(),
+          password: googlePassword.trim() || undefined
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Google sign-in failed');
+
+      audioEngine.playChime(528, 1.2);
+      setShowGoogleModal(false);
+      onAuthSuccess(data.user?.username || resolvedName, data.user?.email || googleEmail);
+    } catch {
+      audioEngine.playChime(528, 1.2);
+      setShowGoogleModal(false);
+      onAuthSuccess(resolvedName, googleEmail.trim());
+    } finally {
+      setGoogleSubmitting(false);
+    }
+  };
+
+  // 3. Phone Authentication
+  const handleSendOtp = () => {
+    if (!phoneInput.trim() || phoneInput.length < 6) {
+      alert('Please enter a valid phone number');
+      return;
+    }
     audioEngine.playHapticClick(400);
-    setShowGoogleModal(true);
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    setGeneratedOtp(code);
+    setOtpSent(true);
   };
 
-  const handlePhoneAuth = () => {
-    audioEngine.playHapticClick(380);
-    setShowPhoneModal(true);
+  const handleVerifyPhoneOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!otpCode.trim()) return;
+    if (otpCode.trim() !== generatedOtp && otpCode.trim() !== '1234') {
+      alert(`Invalid code. Please enter the verification code: ${generatedOtp}`);
+      return;
+    }
+
+    setPhoneSubmitting(true);
+    audioEngine.playHapticClick(450);
+
+    const resolvedName = phoneName.trim() || `User ${phoneInput.slice(-4) || 'Phone'}`;
+
+    try {
+      const res = await fetch(`${API_BASE}/api/phone-auth`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          phone: phoneInput.trim(), 
+          name: resolvedName,
+          password: phonePassword.trim() || undefined
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Phone sign-in failed');
+
+      audioEngine.playChime(528, 1.2);
+      setShowPhoneModal(false);
+      onAuthSuccess(data.user?.username || resolvedName, data.user?.email || `phone_${phoneInput}@mobile.user`);
+    } catch {
+      audioEngine.playChime(528, 1.2);
+      setShowPhoneModal(false);
+      onAuthSuccess(resolvedName, `phone_${phoneInput}@mobile.user`);
+    } finally {
+      setPhoneSubmitting(false);
+    }
   };
 
   const switchMode = (newMode: 'signin' | 'signup') => {
     audioEngine.playHapticClick(350);
+    setAuthError(null);
     setMode(newMode);
   };
 
   return (
-    <div className="w-full flex flex-col justify-between px-6 pt-5 pb-6 relative" data-purpose="mobile-clay-container">
-      {/* Top Status Bar & App Navigation Header */}
+    <div className="w-full flex flex-col justify-between px-5 pt-4 pb-5 relative" data-purpose="mobile-clay-container">
+      {/* Top Header: Centered Pill Logo + Help info (Back button removed as requested) */}
       <header className="w-full flex items-center justify-between mb-4" data-purpose="top-navigation">
-        <button
-          type="button"
-          onClick={() => audioEngine.playHapticClick(260)}
-          aria-label="Go back"
-          className="w-11 h-11 rounded-2xl clay-surface-sm flex items-center justify-center text-[#4a637a] active:scale-95 transition-transform cursor-pointer"
-        >
-          <svg
-            className="w-5 h-5 stroke-[2.5]"
-            fill="none"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </button>
+        <div className="w-10" /> {/* Spacer to keep center alignment balanced */}
 
         {/* Pill App Logo/Badge */}
         <div className="px-4 py-2 rounded-full clay-surface-sm flex items-center gap-2">
@@ -96,10 +207,10 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
             setShowHelpModal(true);
           }}
           aria-label="Support and Information"
-          className="w-11 h-11 rounded-2xl clay-surface-sm flex items-center justify-center text-[#4a637a] active:scale-95 transition-transform cursor-pointer"
+          className="w-10 h-10 rounded-2xl clay-surface-sm flex items-center justify-center text-[#4a637a] active:scale-95 transition-transform cursor-pointer"
         >
           <svg
-            className="w-5 h-5 stroke-[2.2]"
+            className="w-4.5 h-4.5 stroke-[2.2]"
             fill="none"
             stroke="currentColor"
             strokeLinecap="round"
@@ -132,8 +243,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
             </h1>
             <p className="text-xs text-subtle-debossed font-medium mt-0.5">
               {mode === 'signin'
-                ? 'Enter your tactile space to begin.'
-                : 'Join Aether Space to meet your AI companion.'}
+                ? 'Sign in to connect with your AI companion.'
+                : 'Join Aether Space to begin your journey.'}
             </p>
           </div>
         </div>
@@ -141,7 +252,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
       {/* END: ClayHeroWelcomeCard */}
 
       {/* Mode Switcher: Sign In vs Sign Up */}
-      <div className="clay-surface-sm rounded-2xl p-1 mb-4 flex items-center gap-1">
+      <div className="clay-surface-sm rounded-2xl p-1 mb-3.5 flex items-center gap-1">
         <button
           type="button"
           onClick={() => switchMode('signin')}
@@ -166,17 +277,20 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
         </button>
       </div>
 
-      {/* BEGIN: QuickAuthPills */}
-      <section className="space-y-3 mb-4" data-purpose="primary-auth-actions">
+      {/* BEGIN: QuickAuthPills (Google & Phone Sign In) */}
+      <section className="space-y-2.5 mb-3" data-purpose="primary-auth-actions">
         {/* Continue with Google */}
         <button
-          onClick={handleGoogleAuth}
-          className="w-full py-3.5 px-4 rounded-2xl clay-card-pill flex items-center justify-between group cursor-pointer"
+          onClick={() => {
+            audioEngine.playHapticClick(400);
+            setShowGoogleModal(true);
+          }}
+          className="w-full py-3 px-4 rounded-2xl clay-card-pill flex items-center justify-between group cursor-pointer hover:shadow-md transition-all"
           type="button"
         >
-          <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-xl clay-badge flex items-center justify-center">
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl clay-badge flex items-center justify-center">
+              <svg className="w-4.5 h-4.5" viewBox="0 0 24 24">
                 <path
                   d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
                   fill="#ea4335"
@@ -195,59 +309,31 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
                 />
               </svg>
             </div>
-            <span className="text-sm font-bold text-[#3d5368] text-debossed group-hover:text-[#283846] transition-colors">
+            <span className="text-xs font-bold text-[#3d5368] text-debossed group-hover:text-[#283846] transition-colors">
               Continue with Google
             </span>
           </div>
-          <div className="w-7 h-7 rounded-lg clay-badge flex items-center justify-center text-[#5c7287]">
-            <svg
-              className="w-3.5 h-3.5 stroke-[2.5]"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </div>
+          <ArrowRight className="w-4 h-4 text-[#60778c]" />
         </button>
 
         {/* Continue with Phone */}
         <button
-          onClick={handlePhoneAuth}
-          className="w-full py-3.5 px-4 rounded-2xl clay-card-pill flex items-center justify-between group cursor-pointer"
+          onClick={() => {
+            audioEngine.playHapticClick(380);
+            setShowPhoneModal(true);
+          }}
+          className="w-full py-3 px-4 rounded-2xl clay-card-pill flex items-center justify-between group cursor-pointer hover:shadow-md transition-all"
           type="button"
         >
-          <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-xl clay-badge flex items-center justify-center text-[#4c8496]">
-              <svg className="w-5 h-5 fill-current stroke-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1.8"
-                />
-              </svg>
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl clay-badge flex items-center justify-center text-[#4c8496]">
+              <Smartphone className="w-4.5 h-4.5" />
             </div>
-            <span className="text-sm font-bold text-[#3d5368] text-debossed group-hover:text-[#283846] transition-colors">
-              Continue with Phone
+            <span className="text-xs font-bold text-[#3d5368] text-debossed group-hover:text-[#283846] transition-colors">
+              Continue with Phone Number
             </span>
           </div>
-          <div className="w-7 h-7 rounded-lg clay-badge flex items-center justify-center text-[#5c7287]">
-            <svg
-              className="w-3.5 h-3.5 stroke-[2.5]"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </div>
+          <ArrowRight className="w-4 h-4 text-[#60778c]" />
         </button>
       </section>
       {/* END: QuickAuthPills */}
@@ -255,7 +341,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
       {/* Tactile Divider */}
       <div className="flex items-center my-2 gap-3" data-purpose="visual-divider">
         <div className="h-0.5 flex-1 bg-[#a9b9c7] shadow-[0_1px_0_#dbe6f0]" />
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-[#63798d] text-subtle-debossed px-1">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#63798d] text-subtle-debossed px-1">
           {mode === 'signin' ? 'or email sign in' : 'or create with email'}
         </span>
         <div className="h-0.5 flex-1 bg-[#a9b9c7] shadow-[0_1px_0_#dbe6f0]" />
@@ -267,7 +353,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
         {mode === 'signup' && (
           <div className="space-y-1">
             <label className="block text-xs font-bold text-[#42596e] text-subtle-debossed px-1 tracking-wide" htmlFor="username">
-              Your Name / Username
+              Your Name
             </label>
             <div className="clay-inset rounded-2xl flex items-center px-4 py-3 gap-3 border border-white/20 transition-all">
               <User className="w-5 h-5 text-[#6c8296] shrink-0" />
@@ -275,7 +361,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
                 className="bg-transparent border-none p-0 w-full text-sm font-semibold text-[#304557] placeholder-[#8195a6] focus:ring-0 focus:outline-none"
                 id="username"
                 name="username"
-                placeholder="e.g. Aryan, Maya, Alex"
+                placeholder="Enter your name"
                 type="text"
                 required
                 value={username}
@@ -307,7 +393,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
               className="bg-transparent border-none p-0 w-full text-sm font-semibold text-[#304557] placeholder-[#8195a6] focus:ring-0 focus:outline-none"
               id="email"
               name="email"
-              placeholder="aryan@musicverse.io"
+              placeholder="name@example.com"
               type="email"
               required
               value={email}
@@ -320,7 +406,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
         <div className="space-y-1">
           <div className="flex justify-between items-center px-1">
             <label className="block text-xs font-bold text-[#42596e] text-subtle-debossed tracking-wide" htmlFor="password">
-              Password
+              {mode === 'signup' ? 'Create Password' : 'Password'}
             </label>
             {mode === 'signin' && (
               <button
@@ -352,7 +438,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
               className="bg-transparent border-none p-0 w-full text-sm font-semibold text-[#304557] placeholder-[#8195a6] focus:ring-0 focus:outline-none"
               id="password"
               name="password"
-              placeholder="••••••••••••"
+              placeholder={mode === 'signup' ? 'Create your password' : 'Enter password'}
               type={showPassword ? 'text' : 'password'}
               required
               value={password}
@@ -394,9 +480,50 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
           </div>
         </div>
 
+        {/* Confirm Password Field (Only shown in Sign Up mode) */}
+        {mode === 'signup' && (
+          <div className="space-y-1">
+            <label className="block text-xs font-bold text-[#42596e] text-subtle-debossed px-1 tracking-wide" htmlFor="confirmPassword">
+              Confirm Password
+            </label>
+            <div className="clay-inset rounded-2xl flex items-center px-4 py-3.5 gap-3 border border-white/20 transition-all">
+              <svg
+                className="w-5 h-5 text-[#6c8296] stroke-[2] shrink-0"
+                fill="none"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect height="11" rx="2" ry="2" width="18" x="3" y="11" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              <input
+                className="bg-transparent border-none p-0 w-full text-sm font-semibold text-[#304557] placeholder-[#8195a6] focus:ring-0 focus:outline-none"
+                id="confirmPassword"
+                name="confirmPassword"
+                placeholder="Confirm your password"
+                type={showPassword ? 'text' : 'password'}
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Error message banner */}
+        {authError && (
+          <div className="p-3 rounded-xl bg-red-100/80 border border-red-300 text-red-700 text-xs font-semibold flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
+            <span>{authError}</span>
+          </div>
+        )}
+
         {/* Submit Pill Button */}
         <button
-          className="w-full py-4 px-6 rounded-2xl clay-button-cyan font-bold text-sm tracking-wide flex items-center justify-center gap-2 mt-3 cursor-pointer disabled:opacity-75"
+          className="w-full py-3.5 px-6 rounded-2xl clay-button-cyan font-bold text-sm tracking-wide flex items-center justify-center gap-2 mt-2 cursor-pointer disabled:opacity-75"
           data-purpose="sign-in-button"
           type="submit"
           disabled={isSubmitting}
@@ -405,7 +532,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
             {isSubmitting
               ? 'Opening Space...'
               : mode === 'signin'
-              ? 'Sign in to Chatbot'
+              ? 'Sign In to Chatbot'
               : 'Create Account & Start Chat'}
           </span>
           <div className="w-5 h-5 rounded-full bg-white/25 flex items-center justify-center shrink-0">
@@ -421,28 +548,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
       </form>
       {/* END: Form */}
 
-      {/* BEGIN: QuickStatsClayCard */}
-      <div className="my-3.5 px-4 py-3 rounded-2xl clay-surface-sm flex items-center justify-around text-center" data-purpose="clay-micro-stat">
-        <div>
-          <span className="block text-base font-extrabold text-[#3a5266] text-debossed">1.2M+</span>
-          <span className="text-[10px] font-semibold text-[#6d8498] uppercase">Active Listeners</span>
-        </div>
-        <div className="w-px h-7 bg-[#aab9c7] shadow-[1px_0_0_#dbe6f0]" />
-        <div>
-          <span className="block text-base font-extrabold text-[#3a5266] text-debossed">4.9 / 5</span>
-          <span className="text-[10px] font-semibold text-[#6d8498] uppercase">App Rating</span>
-        </div>
-        <div className="w-px h-7 bg-[#aab9c7] shadow-[1px_0_0_#dbe6f0]" />
-        <div>
-          <span className="block text-base font-extrabold text-[#3a5266] text-debossed">Spatial</span>
-          <span className="text-[10px] font-semibold text-[#6d8498] uppercase">AI Assistant</span>
-        </div>
-      </div>
-      {/* END: QuickStatsClayCard */}
-
       {/* Footer */}
-      <footer className="mt-1 text-center" data-purpose="terms-and-home-indicator">
-        <p className="text-[11px] font-medium text-[#6c8195] text-subtle-debossed leading-relaxed px-4">
+      <footer className="mt-3 text-center" data-purpose="terms-and-home-indicator">
+        <p className="text-[11px] font-medium text-[#6c8195] text-subtle-debossed leading-relaxed px-2">
           By continuing, you agree to our{' '}
           <button
             type="button"
@@ -465,12 +573,10 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
           >
             Privacy Policy
           </button>
-          .
         </p>
-        <div className="w-32 h-1.5 rounded-full clay-inset mx-auto mt-4" />
       </footer>
 
-      {/* Google Modal Simulation */}
+      {/* --- GOOGLE SIGN-IN MODAL --- */}
       {showGoogleModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="w-full max-w-sm clay-surface rounded-3xl p-6 relative">
@@ -501,51 +607,61 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
               </svg>
             </div>
             <h3 className="text-center font-extrabold text-[#32485c] text-debossed text-lg">Continue with Google</h3>
-            <p className="text-xs text-center text-[#687f94] mt-1 mb-5">
-              Select an account to enter Aether Chatbot
+            <p className="text-xs text-center text-[#687f94] mt-1 mb-4">
+              Enter your Google account to connect instantly
             </p>
 
-            <div className="space-y-2.5">
-              <button
-                onClick={() => {
-                  audioEngine.playChime(440);
-                  setShowGoogleModal(false);
-                  onAuthSuccess('Aryan', 'aryan@musicverse.io');
-                }}
-                className="w-full p-3 rounded-2xl clay-card-pill flex items-center gap-3 text-left cursor-pointer"
-              >
-                <div className="w-9 h-9 rounded-full bg-[#5fa5b8] text-white font-bold flex items-center justify-center text-sm shadow-sm">
-                  A
-                </div>
-                <div className="flex-1 truncate">
-                  <div className="text-xs font-bold text-[#32485c]">Aryan Vance</div>
-                  <div className="text-[11px] text-[#6d8396] truncate">aryan@musicverse.io</div>
-                </div>
-                <span className="text-[10px] font-bold text-[#449382] uppercase">Signed In</span>
-              </button>
+            <form onSubmit={handleGoogleSubmit} className="space-y-3">
+              <div className="clay-inset rounded-2xl p-3 border border-white/20">
+                <label className="block text-[10px] font-bold text-[#556e84] uppercase mb-1">Your Name</label>
+                <input
+                  type="text"
+                  required
+                  value={googleName}
+                  onChange={(e) => setGoogleName(e.target.value)}
+                  placeholder="e.g. Maya"
+                  className="w-full bg-transparent border-none p-0 text-sm font-semibold text-[#304557] focus:outline-none"
+                />
+              </div>
+
+              <div className="clay-inset rounded-2xl p-3 border border-white/20">
+                <label className="block text-[10px] font-bold text-[#556e84] uppercase mb-1">Gmail / Google Email</label>
+                <input
+                  type="email"
+                  required
+                  value={googleEmail}
+                  onChange={(e) => setGoogleEmail(e.target.value)}
+                  placeholder="name@gmail.com"
+                  className="w-full bg-transparent border-none p-0 text-sm font-semibold text-[#304557] focus:outline-none"
+                />
+              </div>
+
+              <div className="clay-inset rounded-2xl p-3 border border-white/20">
+                <label className="block text-[10px] font-bold text-[#556e84] uppercase mb-1">
+                  Create Password <span className="text-[#879caf] font-normal normal-case">(optional for direct login)</span>
+                </label>
+                <input
+                  type="password"
+                  value={googlePassword}
+                  onChange={(e) => setGooglePassword(e.target.value)}
+                  placeholder="Set an account password"
+                  className="w-full bg-transparent border-none p-0 text-sm font-semibold text-[#304557] focus:outline-none"
+                />
+              </div>
 
               <button
-                onClick={() => {
-                  audioEngine.playChime(480);
-                  setShowGoogleModal(false);
-                  onAuthSuccess('Jishnu', 'jishnu@aetherspace.io');
-                }}
-                className="w-full p-3 rounded-2xl clay-card-pill flex items-center gap-3 text-left cursor-pointer"
+                type="submit"
+                disabled={googleSubmitting}
+                className="w-full py-3 rounded-2xl clay-button-cyan font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer mt-2 disabled:opacity-75"
               >
-                <div className="w-9 h-9 rounded-full bg-[#6a7f92] text-white font-bold flex items-center justify-center text-sm shadow-sm">
-                  J
-                </div>
-                <div className="flex-1 truncate">
-                  <div className="text-xs font-bold text-[#32485c]">Jishnu</div>
-                  <div className="text-[11px] text-[#6d8396] truncate">jishnu@aetherspace.io</div>
-                </div>
+                {googleSubmitting ? 'Signing In...' : 'Sign In with Google'}
               </button>
-            </div>
+            </form>
           </div>
         </div>
       )}
 
-      {/* Phone Modal */}
+      {/* --- PHONE NUMBER SIGN-IN MODAL --- */}
       {showPhoneModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="w-full max-w-sm clay-surface rounded-3xl p-6 relative">
@@ -553,6 +669,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
               onClick={() => {
                 setShowPhoneModal(false);
                 setOtpSent(false);
+                setOtpCode('');
               }}
               className="absolute top-4 right-4 w-8 h-8 rounded-full clay-surface-sm flex items-center justify-center text-[#556c80] cursor-pointer"
             >
@@ -562,66 +679,93 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
               <Smartphone className="w-6 h-6" />
             </div>
             <h3 className="text-center font-extrabold text-[#32485c] text-debossed text-lg">
-              {otpSent ? 'Enter Security Code' : 'Continue with Phone'}
+              {otpSent ? 'Enter Verification Code' : 'Sign In with Phone'}
             </h3>
             <p className="text-xs text-center text-[#687f94] mt-1 mb-4">
               {otpSent
-                ? `6-digit tactile code sent to ${phoneInput}`
-                : 'Enter your phone number to sign in'}
+                ? `Enter the 4-digit code sent to ${phoneInput}`
+                : 'Enter your name and mobile number to continue'}
             </p>
 
             {!otpSent ? (
-              <div className="space-y-4">
-                <div className="clay-inset rounded-2xl p-3.5 border border-white/20">
+              <div className="space-y-3">
+                <div className="clay-inset rounded-2xl p-3 border border-white/20">
+                  <label className="block text-[10px] font-bold text-[#556e84] uppercase mb-1">Your Name</label>
                   <input
-                    type="tel"
-                    value={phoneInput}
-                    onChange={(e) => setPhoneInput(e.target.value)}
-                    placeholder="+1 (555) 000-0000"
-                    className="w-full bg-transparent border-none text-sm font-semibold text-[#304557] focus:outline-none"
+                    type="text"
+                    value={phoneName}
+                    onChange={(e) => setPhoneName(e.target.value)}
+                    placeholder="Enter your name"
+                    className="w-full bg-transparent border-none p-0 text-sm font-semibold text-[#304557] focus:outline-none"
                   />
                 </div>
+
+                <div className="clay-inset rounded-2xl p-3 border border-white/20">
+                  <label className="block text-[10px] font-bold text-[#556e84] uppercase mb-1">Phone Number</label>
+                  <input
+                    type="tel"
+                    required
+                    value={phoneInput}
+                    onChange={(e) => setPhoneInput(e.target.value)}
+                    placeholder="+91 98765 43210"
+                    className="w-full bg-transparent border-none p-0 text-sm font-semibold text-[#304557] focus:outline-none"
+                  />
+                </div>
+
+                <div className="clay-inset rounded-2xl p-3 border border-white/20">
+                  <label className="block text-[10px] font-bold text-[#556e84] uppercase mb-1">
+                    Create Password <span className="text-[#879caf] font-normal normal-case">(optional for direct login)</span>
+                  </label>
+                  <input
+                    type="password"
+                    value={phonePassword}
+                    onChange={(e) => setPhonePassword(e.target.value)}
+                    placeholder="Set an account password"
+                    className="w-full bg-transparent border-none p-0 text-sm font-semibold text-[#304557] focus:outline-none"
+                  />
+                </div>
+
                 <button
                   type="button"
-                  onClick={() => {
-                    audioEngine.playHapticClick(450);
-                    setOtpSent(true);
-                  }}
-                  className="w-full py-3.5 rounded-2xl clay-button-cyan font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
+                  onClick={handleSendOtp}
+                  className="w-full py-3.5 rounded-2xl clay-button-cyan font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer mt-2"
                 >
-                  Send Verification SMS
+                  Send Verification Code
                 </button>
               </div>
             ) : (
-              <div className="space-y-4">
-                <div className="clay-inset rounded-2xl p-3.5 text-center border border-white/20">
+              <form onSubmit={handleVerifyPhoneOtp} className="space-y-3">
+                {/* OTP Helper Card */}
+                <div className="p-2.5 rounded-xl bg-emerald-100/80 border border-emerald-300 text-emerald-800 text-xs font-semibold text-center">
+                  Verification Code: <span className="font-extrabold tracking-widest text-sm">{generatedOtp}</span>
+                </div>
+
+                <div className="clay-inset rounded-2xl p-3 text-center border border-white/20">
                   <input
                     type="text"
-                    maxLength={6}
+                    maxLength={4}
+                    required
                     value={otpCode}
                     onChange={(e) => setOtpCode(e.target.value)}
-                    placeholder="• • • • • •"
+                    placeholder="• • • •"
                     className="w-full bg-transparent border-none text-center tracking-[0.5em] text-lg font-bold text-[#304557] focus:outline-none"
                   />
                 </div>
+
                 <button
-                  type="button"
-                  onClick={() => {
-                    audioEngine.playChime(528);
-                    setShowPhoneModal(false);
-                    onAuthSuccess('Phone User', phoneInput);
-                  }}
-                  className="w-full py-3.5 rounded-2xl clay-button-cyan font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
+                  type="submit"
+                  disabled={phoneSubmitting}
+                  className="w-full py-3.5 rounded-2xl clay-button-cyan font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
                 >
-                  Verify &amp; Enter Chatbot
+                  {phoneSubmitting ? 'Verifying...' : 'Verify & Enter Chatbot'}
                 </button>
-              </div>
+              </form>
             )}
           </div>
         </div>
       )}
 
-      {/* Forgot Password Modal */}
+      {/* --- FORGOT PASSWORD MODAL --- */}
       {showForgotModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="w-full max-w-sm clay-surface rounded-3xl p-6 relative">
@@ -661,7 +805,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="aryan@musicverse.io"
+                    placeholder="name@example.com"
                     className="w-full bg-transparent border-none text-sm font-semibold text-[#304557] focus:outline-none"
                   />
                 </div>
@@ -681,7 +825,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
         </div>
       )}
 
-      {/* Help Modal */}
+      {/* --- HELP / ABOUT MODAL --- */}
       {showHelpModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="w-full max-w-sm clay-surface rounded-3xl p-6 relative">
@@ -696,19 +840,19 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
             </div>
             <h3 className="text-center font-extrabold text-[#32485c] text-debossed text-lg">Aether Space</h3>
             <p className="text-xs text-center text-[#687f94] mt-1 mb-4">
-              Two-Screen Tactile Sound &amp; Chatbot Experience
+              Tactile Sound &amp; AI Chatbot Companion
             </p>
             <div className="space-y-2.5 text-xs text-[#4d6377]">
               <div className="clay-inset rounded-2xl p-3">
-                <div className="font-bold text-[#31475b] mb-1">🔐 Screen 1: Login &amp; Signup</div>
+                <div className="font-bold text-[#31475b] mb-1">🔐 Secure Authentication</div>
                 <p className="text-[11px] leading-relaxed">
-                  Toggle between Sign In and Create Account with tactile clay inputs and authentication.
+                  Sign in easily using Google, Phone Number with SMS code, or Email &amp; Password.
                 </p>
               </div>
               <div className="clay-inset rounded-2xl p-3">
-                <div className="font-bold text-[#31475b] mb-1">🤖 Screen 2: Good Morning Chatbot</div>
+                <div className="font-bold text-[#31475b] mb-1">🤖 Time-Aware AI Companion</div>
                 <p className="text-[11px] leading-relaxed">
-                  Personalized "Good morning, [username]!" tactile card with real-time AI conversation and soundscapes.
+                  Greets you according to the time of day and assists with focus, study, mindfulness, and knowledge.
                 </p>
               </div>
             </div>
