@@ -24,8 +24,3 @@ CREATE TABLE IF NOT EXISTS chat_history (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
--- Optional: Sample initial user (password: test1234)
--- INSERT INTO users (username, email, password_hash) 
--- VALUES ('Aryan', 'aryan@musicverse.io', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1')
--- ON DUPLICATE KEY UPDATE username=username;

@@ -1,12 +1,13 @@
-# 🤖 Aether Space AI Chatbot
+# 🌟 Aether Space — AI Chatbot Companion
+### Pure Python, HTML5, CSS3 & JavaScript (ES6+) Architecture
 
-A full-stack AI Chatbot application designed for tactile mindfulness, focus, and daily guidance.
+A full-stack, tactile AI Chatbot application designed for mindfulness, focus, and daily guidance with a claymorphic design and zero external web framework dependencies.
 
-- **Frontend:** React + TypeScript + Tailwind CSS (Vite)
-- **Backend:** Python + FastAPI (REST API)
-- **AI Model:** Google Gemini API
-- **Database:** MySQL
-- **Deployment:** Vercel (Frontend) + Render / Railway (Backend)
+- **Frontend:** Semantic HTML5 + Pure CSS3 (Claymorphic Neumorphic Design System) + Vanilla JavaScript (ES6+)
+- **Backend:** Pure Python Standard Library (`http.server.ThreadingHTTPServer` REST API)
+- **AI Engine:** Google Gemini API (via `google-genai` SDK with multi-model cascade and mindful fallback)
+- **Database:** Dual-Engine Relational Architecture: MySQL with automated SQLite local fallback (`chatbot_local.db`)
+- **Audio Engine:** Browser Web Audio API (432Hz ambient soundscapes, haptic pops, Tibetan singing bowl chime)
 
 ---
 
@@ -14,23 +15,20 @@ A full-stack AI Chatbot application designed for tactile mindfulness, focus, and
 
 ```
 Mini Project/
-├── backend/                    # Python + FastAPI Backend
-│   ├── .env                    # Secrets & credentials (Git-ignored)
-│   ├── .env.example            # Example configuration template
-│   ├── ai_service.py           # Gemini API integration & fallback logic
-│   ├── database.py             # MySQL connection, queries & table creation
-│   ├── main.py                 # FastAPI app & REST API routes
-│   ├── models.py               # Pydantic data models
-│   ├── requirements.txt        # Python dependencies
-│   ├── run_backend.bat         # 1-click script to run backend on Windows
-│   └── setup_database.sql      # Optional raw SQL setup script
-├── src/                        # React Frontend Source Code
-│   ├── components/             # UI Components (AuthScreen, ChatbotScreen, etc.)
-│   └── utils/                  # Audio engine and utilities
-├── package.json                # Frontend dependencies & scripts
-├── vite.config.ts              # Vite config with API proxy to FastAPI
-├── vercel.json                 # Vercel deployment configuration
-└── README.md                   # This documentation
+├── index.html              # Frontend user interface (Auth & Chatbot screens)
+├── style.css               # Complete claymorphic stylesheet (pure CSS, no frameworks)
+├── app.js                  # Frontend logic, Web Audio engine, IST time, & REST client
+├── server.py               # Pure Python threaded HTTP server & REST API (replaces FastAPI)
+├── database.py             # Dual-engine database persistence (MySQL + SQLite fallback)
+├── ai_service.py           # Google Gemini API client with smart fallback
+├── setup_database.sql      # Optional MySQL schema creation script
+├── requirements.txt        # Minimal Python dependencies (google-genai, pymysql, python-dotenv)
+├── run.bat                 # One-click Windows launch script (starts server & opens browser)
+├── .env                    # Environment variables (GEMINI_API_KEY, MySQL credentials)
+├── .env.example            # Environment variables template
+├── chatbot_local.db        # SQLite database for zero-configuration local development
+├── PROJECT_REPORT.md       # Full B.Tech Semester III IPP project examination report
+└── README.md               # Project documentation & setup instructions
 ```
 
 ---
@@ -39,139 +37,65 @@ Mini Project/
 
 ### 1. Prerequisites
 - **Python 3.10+** installed
-- **Node.js (v18+)** installed
-- **MySQL Server** installed and running locally
+- Optional: **MySQL Server** (if not installed, the app automatically uses local SQLite with zero setup!)
 
----
-
-### 2. Configure Backend (`backend/.env`)
-
-In the `backend/` directory, open or edit `.env`:
+### 2. Configure Environment (`.env`)
+Create or edit `.env` in the root directory:
 
 ```env
 # 1. Google Gemini API Key (Get a free key from https://aistudio.google.com/)
 GEMINI_API_KEY=your_actual_gemini_api_key
 
-# 2. Local MySQL Database Credentials
+# 2. Local MySQL Database Credentials (Optional)
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=root
 DB_PASSWORD=your_mysql_password
 DB_NAME=chatbot_db
+PORT=8000
 ```
 
-> **Tip:** If you haven't set up MySQL yet or want to test immediately, the backend includes automatic fallbacks so you can test without crashing!
+### 3. Install Python Dependencies
+```bash
+pip install -r requirements.txt
+```
 
----
-
-### 3. Run the Backend (Python + FastAPI)
-
-Open a terminal in the project directory:
+### 4. Run the Application
+Simply double-click `run.bat` or run:
 
 ```bash
-# 1. Navigate to backend
-cd backend
-
-# 2. Activate virtual environment (Windows)
-.\venv\Scripts\activate
-
-# 3. Start the FastAPI server
-uvicorn main:app --reload --port 8000
+python server.py
 ```
 
-*(Or simply double-click `backend/run_backend.bat`)*
-
-- **Backend URL:** `http://127.0.0.1:8000`
-- **Interactive API Documentation (Swagger UI):** `http://127.0.0.1:8000/docs`
+Then open your browser at:
+👉 **`http://127.0.0.1:8000`**
 
 ---
 
-### 4. Run the Frontend (React + Vite)
+## 🌟 Key Features
 
-Open a second terminal in the project root:
+1. **Claymorphic UI Aesthetic:**
+   - 3D tactile clay buttons, recessed inset input fields, and smooth debossed text shadows.
+   - Animated custom 3D clay avatar with headphones, cheerful expressions, and online indicator pip.
+   - Responsive card container that scales effortlessly between desktop laptops and mobile viewports.
 
-```bash
-# 1. Install frontend dependencies (if not done)
-npm install --legacy-peer-deps
+2. **Zero-Framework Python Server:**
+   - Powered by Python's built-in `http.server.ThreadingHTTPServer`.
+   - Complete asynchronous JSON REST API handling `/api/register`, `/api/login`, `/api/google-auth`, `/api/phone-auth`, `/api/chat`, and `/api/history`.
+   - Full CORS preflight support (`OPTIONS`) and automatic MIME type static file delivery.
 
-# 2. Start Vite dev server
-npm run dev
-```
+3. **Multi-Method Secure Authentication:**
+   - **Email & Password:** Registration and login with salted SHA-256 password hashing.
+   - **Google OAuth Simulation:** One-tap sign-in modal creating or retrieving user accounts.
+   - **Phone Number with OTP:** 4-digit verification code generation and authentication.
+   - **Forgot Password Modal:** Simulated reset link generation with email verification.
 
-- Open your browser at: `http://localhost:5173`
-- The frontend automatically routes `/api/*` requests to your FastAPI backend at `http://127.0.0.1:8000`.
+4. **Time-Aware AI Companion & IST Sync:**
+   - Uses strict Indian Standard Time (IST, UTC+5:30) calculations to dynamically greet users (*"Good morning"*, *"Good afternoon"*, *"Good evening"*).
+   - Quick prompt suggestion chips for Daily Focus, Audio Remedies, Box Breathing, and Spark Clarity.
 
----
-
-## 📡 REST API Endpoints
-
-FastAPI provides automatic interactive documentation at `http://127.0.0.1:8000/docs`.
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/` | Backend health check |
-| `POST` | `/api/register` | Register a new user (stores hashed password in MySQL) |
-| `POST` | `/api/login` | Authenticate user against MySQL |
-| `POST` | `/api/chat` | Send message, call Gemini AI, store conversation in MySQL |
-| `GET` | `/api/history?email=...` | Retrieve conversation history from MySQL |
-| `DELETE` | `/api/history?email=...` | Clear conversation history from MySQL |
-
----
-
-## 🗄️ MySQL Database Schema
-
-The backend automatically creates the database and tables upon startup. You can also run `backend/setup_database.sql` directly in MySQL Workbench:
-
-```sql
--- Users Table
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(100) NOT NULL,
-    email VARCHAR(150) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Chat History Table
-CREATE TABLE chat_history (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NULL,
-    role ENUM('user', 'assistant') NOT NULL,
-    message TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-```
-
----
-
-## 🌐 Deployment Guide
-
-### A. Deploy Frontend on Vercel
-1. Push your repository to GitHub.
-2. Sign in to [Vercel](https://vercel.com/) and click **Add New Project**.
-3. Import your `Python-Chatbot` repository.
-4. Framework Preset: **Vite**.
-5. Environment Variables:
-   - `VITE_BACKEND_URL`: Set to your deployed backend URL (e.g. `https://your-chatbot-backend.onrender.com`).
-6. Click **Deploy**.
-
-### B. Deploy Backend on Render (Free tier)
-1. Sign in to [Render](https://render.com/).
-2. Click **New +** -> **Web Service**.
-3. Connect your GitHub repository.
-4. Set:
-   - **Root Directory:** `backend`
-   - **Environment:** `Python 3`
-   - **Build Command:** `pip install -r requirements.txt`
-   - **Start Command:** `uvicorn main:app --host 0.0.0.0 --port $PORT`
-5. In **Environment Variables**, add:
-   - `GEMINI_API_KEY`: Your Gemini API key
-   - `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`: Your cloud MySQL credentials.
-
-### C. Free Cloud MySQL Hosting
-You can use any free MySQL cloud provider:
-- [Aiven for MySQL](https://aiven.io/) (Free tier)
-- [TiDB Serverless](https://tidb.cloud/) (Free tier, MySQL-compatible)
-- [Clever Cloud](https://www.clever-cloud.com/)
-Copy the host, port, user, and password provided by the host into your Render environment variables.
+5. **Integrated Web Audio Engine:**
+   - **Haptic Clicks:** Client-side oscillator clicks synthesized on keypresses and button taps.
+   - **Meditation Chime:** 432Hz sine tone with harmonic 5th overtone and bandpass filter on auth success.
+   - **Ambient Soundscape:** Continuous 432Hz/438Hz binaural theta brainwave audio generator for deep focus.
+   - **Text-to-Speech (TTS):** Browser SpeechSynthesis utterance integration on every assistant message.

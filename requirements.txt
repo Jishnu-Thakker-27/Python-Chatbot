@@ -1,0 +1,6 @@
+# Python Dependencies for Aether Space AI Chatbot
+# Pure Python standard library handles HTTP server (Zero web framework required)
+
+google-genai>=2.4.0
+pymysql>=1.1.0
+python-dotenv>=1.0.0

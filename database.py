@@ -1,10 +1,15 @@
 import os
 import hashlib
 import sqlite3
-import pymysql
-import pymysql.cursors
 from datetime import datetime, timezone, timedelta
 from dotenv import load_dotenv
+
+# Try importing pymysql safely; if not installed, gracefully fall back to SQLite
+try:
+    import pymysql
+    import pymysql.cursors
+except ImportError:
+    pymysql = None
 
 # Indian Standard Time (IST, UTC+5:30)
 IST = timezone(timedelta(hours=5, minutes=30))
@@ -18,7 +23,11 @@ def get_current_ist_display() -> str:
     return datetime.now(IST).strftime("%I:%M %p")
 
 # Load environment variables from .env file
-load_dotenv()
+env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+if os.path.exists(env_path):
+    load_dotenv(env_path)
+else:
+    load_dotenv()
 
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = int(os.getenv("DB_PORT", 3306))
@@ -26,7 +35,7 @@ DB_USER = os.getenv("DB_USER", "root")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "")
 DB_NAME = os.getenv("DB_NAME", "chatbot_db")
 
-SQLITE_DB_PATH = os.path.join(os.path.dirname(__file__), "chatbot_local.db")
+SQLITE_DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "chatbot_local.db")
 
 # Helper function to hash passwords securely using SHA-256
 def hash_password(password: str) -> str:
@@ -37,7 +46,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return hash_password(plain_password) == hashed_password
 
 def get_mysql_connection(include_db: bool = True):
-    """Attempts to connect to MySQL."""
+    """Attempts to connect to MySQL if PyMySQL is available."""
+    if pymysql is None:
+        return None
     try:
         conn = pymysql.connect(
             host=DB_HOST,
@@ -49,7 +60,7 @@ def get_mysql_connection(include_db: bool = True):
             autocommit=True
         )
         return conn
-    except Exception as e:
+    except Exception:
         return None
 
 def get_sqlite_connection():
@@ -97,10 +108,13 @@ def init_db():
             return True
         except Exception as e:
             print(f"[Database Notice] MySQL setup error: {e}")
-            mysql_conn.close()
+            try:
+                mysql_conn.close()
+            except Exception:
+                pass
 
-    # Fallback to local SQLite if MySQL isn't connected yet
-    print("[Database] MySQL not reachable with current credentials. Using local SQLite database (chatbot_local.db) for zero-downtime development.")
+    # Fallback to local SQLite if MySQL isn't connected
+    print("[Database] MySQL not reachable. Using local SQLite database (chatbot_local.db) for zero-downtime development.")
     MYSQL_ACTIVE = False
     sqlite_conn = get_sqlite_connection()
     with sqlite_conn:

@@ -24,6 +24,8 @@ def get_ai_response(message: str, display_name: str = "Friend", history: list = 
     Sends message + context to Google Gemini API.
     Returns: (reply_text, source) where source is 'gemini' or 'fallback'.
     """
+    # Always reload .env so user changes take effect immediately without restarting server
+    load_dotenv(override=True)
     api_key = os.getenv("GEMINI_API_KEY")
 
     # If no API key is provided, return intelligent fallback
@@ -56,8 +58,12 @@ def get_ai_response(message: str, display_name: str = "Friend", history: list = 
         chat_contents.append(f"user: {message}")
         full_prompt = "\n".join(chat_contents)
 
-        # Fast and resilient model cascade (prioritizes lowest latency models)
-        candidate_models = ["gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-3.7-flash", "gemini-3.8-flash"]
+        # Active Gemini models recommended by Google
+        candidate_models = [
+            "gemini-3.8-flash",
+            "gemini-3.5-flash-lite",
+            "gemini-3.6-flash"
+        ]
 
         for model_name in candidate_models:
             try:

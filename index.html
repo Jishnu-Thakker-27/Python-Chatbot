@@ -1,21 +1,640 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>Aether Space - Tactile Sound & Mind</title>
-    <meta name="description" content="Claymorphic tactile sound, spatial audio, and mindfulness experience with soothing soundscapes and interactive haptic controls." />
-    <meta property="og:title" content="Aether Space - Tactile Sound & Mind" />
-    <meta property="og:description" content="Claymorphic tactile sound, spatial audio, and mindfulness experience with soothing soundscapes and interactive haptic controls." />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Aether Space — Tactile AI Chatbot Companion</title>
+  <meta name="description" content="Aether Space is a full-stack, responsive, and tactile AI chatbot built with Python, HTML, CSS, JavaScript, and Google Gemini API." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Auto-responsive Claymorphic Card Container -->
+    <main class="main-clay-card" id="app-container">
 
+      <!-- ================================================================= -->
+      <!-- SCREEN 1: AUTHENTICATION SCREEN (Sign In / Sign Up)              -->
+      <!-- ================================================================= -->
+      <section id="auth-screen" class="w-full flex flex-col justify-between" style="padding: 16px 20px 20px 20px;">
+        <!-- Top Header Navigation -->
+        <header class="w-full flex items-center justify-between" style="margin-bottom: 16px;">
+          <div style="width: 40px;"></div> <!-- Spacer -->
+
+          <!-- Pill App Logo/Badge -->
+          <div class="clay-surface-sm flex items-center gap-2" style="padding: 8px 16px; border-radius: 9999px;">
+            <div style="width: 10px; height: 10px; border-radius: 9999px; background-color: #52a6ba; box-shadow: 0 0 8px #52a6ba;"></div>
+            <span class="text-xs font-bold uppercase tracking-wider text-subtle-debossed" style="color: #4d657d;">
+              Aether Space
+            </span>
+          </div>
+
+          <!-- Help / Info Button -->
+          <button
+            type="button"
+            id="btn-open-help"
+            aria-label="Support and Information"
+            class="clay-surface-sm flex items-center justify-center cursor-pointer"
+            style="width: 40px; height: 40px; border-radius: 16px; border: none; color: #4a637a;"
+          >
+            <svg style="width: 18px; height: 18px; stroke-width: 2.2;" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+              <line x1="12" x2="12.01" y1="17" y2="17" />
+            </svg>
+          </button>
+        </header>
+
+        <!-- Welcome Clay Hero Banner -->
+        <section class="clay-surface rounded-3xl relative overflow-hidden" style="padding: 20px; margin-bottom: 16px;">
+          <div style="position: absolute; top: -48px; right: -48px; width: 144px; height: 144px; background: rgba(255,255,255,0.2); border-radius: 9999px; filter: blur(24px); pointer-events: none;"></div>
+          
+          <div class="flex items-center gap-4">
+            <!-- Clay Avatar -->
+            <div class="relative shrink-0" style="width: 80px; height: 80px;">
+              <div class="clay-surface-sm flex items-center justify-center overflow-hidden" style="width: 80px; height: 80px; border-radius: 16px; padding: 6px; border: 1px solid rgba(255,255,255,0.4);">
+                <div class="w-full h-full flex items-center justify-center relative" style="border-radius: 12px; background: linear-gradient(135deg, #8faec2, #607e94); box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
+                  <!-- Character Head -->
+                  <div class="relative flex items-center justify-center" style="width: 48px; height: 48px; border-radius: 9999px; background-color: #f3d2be; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <!-- Hair -->
+                    <div class="absolute rounded-t-full" style="top: -6px; width: 44px; height: 24px; background-color: #364958;"></div>
+                    <!-- Cheerful Eyes -->
+                    <div class="flex justify-between" style="width: 28px; z-index: 10; padding-top: 4px;">
+                      <div style="width: 6px; height: 6px; background-color: #2c3d4a; border-radius: 9999px; box-shadow: 0 1px 1px rgba(0,0,0,0.2);"></div>
+                      <div style="width: 6px; height: 6px; background-color: #2c3d4a; border-radius: 9999px; box-shadow: 0 1px 1px rgba(0,0,0,0.2);"></div>
+                    </div>
+                    <!-- Soft Smile -->
+                    <div class="absolute" style="bottom: 10px; width: 12px; height: 6px; border-bottom: 2px solid #2c3d4a; border-radius: 9999px;"></div>
+                    <!-- Clay Headphone Arc -->
+                    <div class="absolute pointer-events-none" style="top: -10px; width: 56px; height: 36px; border-top: 4px solid #517188; border-radius: 9999px;"></div>
+                    <!-- Headphone Pads -->
+                    <div class="absolute" style="left: -6px; width: 12px; height: 24px; background-color: #517188; border-radius: 9999px;"></div>
+                    <div class="absolute" style="right: -6px; width: 12px; height: 24px; background-color: #517188; border-radius: 9999px;"></div>
+                  </div>
+                </div>
+              </div>
+              <!-- Online Pip -->
+              <div class="clay-badge flex items-center justify-center absolute" style="bottom: -4px; right: -4px; width: 20px; height: 20px; border-radius: 9999px;">
+                <span style="width: 10px; height: 10px; border-radius: 9999px; background-color: #4bb390; box-shadow: 0 0 6px #4bb390;"></span>
+              </div>
+            </div>
+
+            <!-- Welcome Text -->
+            <div class="flex-1" style="padding-right: 4px;">
+              <div class="clay-tag inline-flex items-center gap-1.5" style="padding: 2px 10px; border-radius: 9999px; margin-bottom: 6px;">
+                <span style="width: 6px; height: 6px; border-radius: 9999px; background-color: #4a97a8;"></span>
+                <span class="text-[10px] font-bold uppercase tracking-wide" style="color: #355b66;">Sound &amp; Mind</span>
+              </div>
+              <h1 id="auth-title" class="text-xl font-extrabold text-debossed leading-tight">Welcome back!</h1>
+              <p id="auth-subtitle" class="text-xs text-subtle-debossed font-medium" style="margin-top: 2px;">
+                Sign in to connect with your AI companion.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Mode Switcher: Sign In vs Sign Up -->
+        <div class="clay-surface-sm rounded-2xl flex items-center gap-1" style="padding: 4px; margin-bottom: 14px;">
+          <button
+            type="button"
+            id="tab-signin"
+            class="flex-1 text-xs font-bold clay-badge-active cursor-pointer text-center"
+            style="padding: 8px 0; border-radius: 12px; border: none;"
+          >
+            Sign In
+          </button>
+          <button
+            type="button"
+            id="tab-signup"
+            class="flex-1 text-xs font-bold cursor-pointer text-center"
+            style="padding: 8px 0; border-radius: 12px; border: none; background: transparent; color: #50677b;"
+          >
+            Create Account
+          </button>
+        </div>
+
+        <!-- Quick Auth Pills (Google & Phone) -->
+        <section class="flex flex-col gap-2.5" style="margin-bottom: 12px;">
+          <!-- Google Pill -->
+          <button
+            type="button"
+            id="btn-open-google"
+            class="clay-card-pill w-full flex items-center justify-between"
+            style="padding: 12px 16px; border-radius: 16px;"
+          >
+            <div class="flex items-center gap-3">
+              <div class="clay-badge flex items-center justify-center" style="width: 36px; height: 36px; border-radius: 12px;">
+                <svg style="width: 18px; height: 18px;" viewBox="0 0 24 24">
+                  <path d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z" fill="#ea4335"/>
+                  <path d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.2 2.8-2.5 3.7l3.8 3c2.2-2 3.7-5.1 3.7-9z" fill="#4285f4"/>
+                  <path d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.8 0-1.2.2-2.1.4-2.8L1.9 6.3C.7 8.7 0 10.3 0 12s.7 3.3 1.9 5.7l3.7-2.9z" fill="#fbbc05"/>
+                  <path d="M12 23c3.2 0 6-1.1 8-3l-3.8-3c-1.1.7-2.5 1.2-4.2 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16c1.8 3.7 5.6 7 10.1 7z" fill="#34a853"/>
+                </svg>
+              </div>
+              <span class="text-xs font-bold text-debossed" style="color: #3d5368;">Continue with Google</span>
+            </div>
+            <svg style="width: 16px; height: 16px; color: #60778c;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          <!-- Phone Pill -->
+          <button
+            type="button"
+            id="btn-open-phone"
+            class="clay-card-pill w-full flex items-center justify-between"
+            style="padding: 12px 16px; border-radius: 16px;"
+          >
+            <div class="flex items-center gap-3">
+              <div class="clay-badge flex items-center justify-center" style="width: 36px; height: 36px; border-radius: 12px; color: #4c8496;">
+                <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                  <line x1="12" y1="18" x2="12.01" y2="18"/>
+                </svg>
+              </div>
+              <span class="text-xs font-bold text-debossed" style="color: #3d5368;">Continue with Phone Number</span>
+            </div>
+            <svg style="width: 16px; height: 16px; color: #60778c;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </section>
+
+        <!-- Visual Divider -->
+        <div class="flex items-center gap-3" style="margin: 8px 0;">
+          <div class="flex-1" style="height: 2px; background-color: #a9b9c7; box-shadow: 0 1px 0 #dbe6f0;"></div>
+          <span id="divider-text" class="text-[10px] font-semibold uppercase tracking-wider text-subtle-debossed" style="color: #63798d; padding: 0 4px;">
+            or email sign in
+          </span>
+          <div class="flex-1" style="height: 2px; background-color: #a9b9c7; box-shadow: 0 1px 0 #dbe6f0;"></div>
+        </div>
+
+        <!-- Email & Password Form -->
+        <form id="auth-form" class="flex flex-col gap-3" style="margin: 4px 0;">
+          <!-- Username Field (Only on Sign Up) -->
+          <div id="field-username-container" class="flex flex-col gap-1 hidden">
+            <label class="text-xs font-bold text-subtle-debossed tracking-wide" style="color: #42596e; padding: 0 4px;" for="input-username">
+              Your Name
+            </label>
+            <div class="clay-inset rounded-2xl flex items-center gap-3" style="padding: 12px 16px; border: 1px solid rgba(255,255,255,0.2);">
+              <svg style="width: 20px; height: 20px; color: #6c8296;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
+              <input type="text" id="input-username" placeholder="Enter your name" />
+            </div>
+          </div>
+
+          <!-- Email Field -->
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-bold text-subtle-debossed tracking-wide" style="color: #42596e; padding: 0 4px;" for="input-email">
+              Email Address
+            </label>
+            <div class="clay-inset rounded-2xl flex items-center gap-3" style="padding: 14px 16px; border: 1px solid rgba(255,255,255,0.2);">
+              <svg style="width: 20px; height: 20px; color: #6c8296; stroke-width: 2;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <rect height="16" rx="3" width="20" x="2" y="4" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+              </svg>
+              <input type="email" id="input-email" required placeholder="name@example.com" />
+            </div>
+          </div>
+
+          <!-- Password Field -->
+          <div class="flex flex-col gap-1">
+            <div class="flex justify-between items-center" style="padding: 0 4px;">
+              <label id="label-password" class="text-xs font-bold text-subtle-debossed tracking-wide" style="color: #42596e;" for="input-password">
+                Password
+              </label>
+              <button
+                type="button"
+                id="btn-open-forgot"
+                class="text-xs font-semibold cursor-pointer"
+                style="color: #488796; background: none; border: none; text-decoration: underline;"
+              >
+                Forgot?
+              </button>
+            </div>
+            <div class="clay-inset rounded-2xl flex items-center gap-3" style="padding: 14px 16px; border: 1px solid rgba(255,255,255,0.2);">
+              <svg style="width: 20px; height: 20px; color: #6c8296; stroke-width: 2;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <rect height="11" rx="2" ry="2" width="18" x="3" y="11" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              <input type="password" id="input-password" required placeholder="Enter password" />
+              <button
+                type="button"
+                id="btn-toggle-password"
+                aria-label="Toggle password visibility"
+                style="background: none; border: none; color: #758a9e; cursor: pointer; padding: 4px;"
+              >
+                <svg id="icon-eye-off" style="width: 16px; height: 16px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                <svg id="icon-eye-on" class="hidden" style="width: 16px; height: 16px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+                  <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
+                  <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
+                  <line x1="2" x2="22" y1="2" y2="22" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Confirm Password Field (Only on Sign Up) -->
+          <div id="field-confirm-container" class="flex flex-col gap-1 hidden">
+            <label class="text-xs font-bold text-subtle-debossed tracking-wide" style="color: #42596e; padding: 0 4px;" for="input-confirm-password">
+              Confirm Password
+            </label>
+            <div class="clay-inset rounded-2xl flex items-center gap-3" style="padding: 14px 16px; border: 1px solid rgba(255,255,255,0.2);">
+              <svg style="width: 20px; height: 20px; color: #6c8296; stroke-width: 2;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <rect height="11" rx="2" ry="2" width="18" x="3" y="11" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              <input type="password" id="input-confirm-password" placeholder="Confirm your password" />
+            </div>
+          </div>
+
+          <!-- Error Alert Banner -->
+          <div id="auth-error-box" class="hidden" style="padding: 12px; border-radius: 12px; background: rgba(254, 226, 226, 0.85); border: 1px solid #fca5a5; color: #b91c1c; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+            <svg style="width: 16px; height: 16px; shrink-0: 0; color: #dc2626;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span id="auth-error-text">Authentication failed</span>
+          </div>
+
+          <!-- Submit Pill Button -->
+          <button
+            type="submit"
+            id="btn-auth-submit"
+            class="clay-button-cyan w-full font-bold text-sm tracking-wide flex items-center justify-center gap-2"
+            style="padding: 14px 24px; border-radius: 16px; margin-top: 8px;"
+          >
+            <span id="btn-auth-submit-text">Sign In to Chatbot</span>
+            <div style="width: 20px; height: 20px; border-radius: 9999px; background: rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center;">
+              <svg style="width: 12px; height: 12px; fill: white; stroke: white; transform: translateX(1px);" viewBox="0 0 24 24">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
+            </div>
+          </button>
+        </form>
+
+        <!-- Terms Footer -->
+        <footer style="margin-top: 12px; text-align: center;">
+          <p class="text-[11px] font-medium text-subtle-debossed" style="color: #6c8195; line-height: 1.6; padding: 0 8px;">
+            By continuing, you agree to our 
+            <button type="button" id="link-terms" style="background: none; border: none; font-weight: 700; text-decoration: underline; color: #42596e; cursor: pointer;">
+              Terms of Service
+            </button> 
+            &amp; 
+            <button type="button" id="link-privacy" style="background: none; border: none; font-weight: 700; text-decoration: underline; color: #42596e; cursor: pointer;">
+              Privacy Policy
+            </button>
+          </p>
+        </footer>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- SCREEN 2: CHATBOT SCREEN                                         -->
+      <!-- ================================================================= -->
+      <section id="chatbot-screen" class="chatbot-container hidden">
+        <!-- Top Navigation -->
+        <header class="w-full flex items-center justify-between shrink-0" style="margin-bottom: 12px;">
+          <!-- Back / Switch Account -->
+          <button
+            type="button"
+            id="btn-back-to-auth"
+            aria-label="Back to Sign In"
+            class="clay-surface-sm flex items-center justify-center cursor-pointer"
+            style="width: 40px; height: 40px; border-radius: 16px; border: none; color: #4a637a;"
+            title="Sign out / Switch account"
+          >
+            <svg style="width: 20px; height: 20px; stroke-width: 2.5;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+          </button>
+
+          <!-- Center Pill Badge -->
+          <div class="clay-surface-sm flex items-center gap-2" style="padding: 6px 14px; border-radius: 9999px;">
+            <div id="audio-status-pip" style="width: 8px; height: 8px; border-radius: 9999px; background-color: #52a6ba; box-shadow: 0 0 6px #52a6ba;"></div>
+            <span class="text-xs font-bold uppercase tracking-wider text-subtle-debossed" style="color: #4d657d;">
+              Aether AI Chatbot
+            </span>
+          </div>
+
+          <!-- Header Right Actions -->
+          <div class="flex items-center gap-2">
+            <!-- Ambient Audio Toggle -->
+            <button
+              type="button"
+              id="btn-toggle-soundscape"
+              aria-label="Toggle ambient focus audio"
+              class="clay-surface-sm flex items-center justify-center cursor-pointer"
+              style="width: 40px; height: 40px; border-radius: 16px; border: none; color: #4a637a;"
+              title="Play 432Hz Focus Soundscape"
+            >
+              <svg id="icon-sound-off" style="width: 18px; height: 18px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <line x1="23" y1="9" x2="17" y2="15" />
+                <line x1="17" y1="9" x2="23" y2="15" />
+              </svg>
+              <svg id="icon-sound-on" class="hidden" style="width: 18px; height: 18px; color: #059669;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+              </svg>
+            </button>
+
+            <!-- Reset Conversation -->
+            <button
+              type="button"
+              id="btn-reset-chat"
+              aria-label="Reset conversation"
+              class="clay-surface-sm flex items-center justify-center cursor-pointer"
+              style="width: 40px; height: 40px; border-radius: 16px; border: none; color: #4a637a;"
+              title="Reset conversation"
+            >
+              <svg style="width: 16px; height: 16px; stroke-width: 2.2;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v5h5" />
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        <!-- Ambient Soundscape Banner (Active Indicator) -->
+        <div id="soundscape-banner" class="hidden shrink-0" style="margin-bottom: 8px; padding: 4px 12px; border-radius: 12px; background: rgba(209, 250, 229, 0.75); border: 1px solid #6ee7b7; color: #065f46; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: space-between;">
+          <span class="flex items-center gap-1.5">
+            <span class="animate-ping" style="width: 8px; height: 8px; border-radius: 9999px; background-color: #10b981;"></span>
+            432Hz Deep Focus Soundscape is active
+          </span>
+          <button type="button" id="btn-banner-mute" style="background: none; border: none; color: #047857; text-decoration: underline; cursor: pointer; font-size: 10px; font-weight: 700;">
+            Mute
+          </button>
+        </div>
+
+        <!-- Dynamic Greeting Hero Box -->
+        <section class="clay-surface rounded-3xl relative overflow-hidden shrink-0" style="padding: 16px; margin-bottom: 12px;">
+          <div style="position: absolute; top: -48px; right: -48px; width: 144px; height: 144px; background: rgba(255,255,255,0.2); border-radius: 9999px; filter: blur(24px); pointer-events: none;"></div>
+          
+          <div class="flex items-center gap-3.5">
+            <!-- Avatar -->
+            <div class="relative shrink-0" style="width: 80px; height: 80px;">
+              <div class="clay-surface-sm flex items-center justify-center overflow-hidden" style="width: 80px; height: 80px; border-radius: 16px; padding: 6px; border: 1px solid rgba(255,255,255,0.4);">
+                <div class="w-full h-full flex items-center justify-center relative" style="border-radius: 12px; background: linear-gradient(135deg, #8faec2, #607e94); box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
+                  <!-- Character Head -->
+                  <div class="relative flex items-center justify-center" style="width: 48px; height: 48px; border-radius: 9999px; background-color: #f3d2be; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div class="absolute rounded-t-full" style="top: -6px; width: 44px; height: 24px; background-color: #364958;"></div>
+                    <div class="flex justify-between" style="width: 28px; z-index: 10; padding-top: 4px;">
+                      <div style="width: 6px; height: 6px; background-color: #2c3d4a; border-radius: 9999px;"></div>
+                      <div style="width: 6px; height: 6px; background-color: #2c3d4a; border-radius: 9999px;"></div>
+                    </div>
+                    <div class="absolute" style="bottom: 10px; width: 12px; height: 6px; border-bottom: 2px solid #2c3d4a; border-radius: 9999px;"></div>
+                    <div class="absolute pointer-events-none" style="top: -10px; width: 56px; height: 36px; border-top: 4px solid #517188; border-radius: 9999px;"></div>
+                    <div class="absolute" style="left: -6px; width: 12px; height: 24px; background-color: #517188; border-radius: 9999px;"></div>
+                    <div class="absolute" style="right: -6px; width: 12px; height: 24px; background-color: #517188; border-radius: 9999px;"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="clay-badge flex items-center justify-center absolute" style="bottom: -4px; right: -4px; width: 20px; height: 20px; border-radius: 9999px;">
+                <span style="width: 10px; height: 10px; border-radius: 9999px; background-color: #4bb390; box-shadow: 0 0 6px #4bb390;"></span>
+              </div>
+            </div>
+
+            <div class="flex-1 min-w-0" style="padding-right: 4px;">
+              <div class="clay-tag inline-flex items-center gap-1.5" style="padding: 2px 8px; border-radius: 9999px; margin-bottom: 4px;">
+                <span style="width: 6px; height: 6px; border-radius: 9999px; background-color: #4bb390; box-shadow: 0 0 4px #4bb390;"></span>
+                <span class="text-[10px] font-bold uppercase tracking-wide" style="color: #355b66;">Sound &amp; Mind</span>
+              </div>
+              <h1 id="chat-greeting" class="text-lg font-extrabold text-debossed leading-tight truncate">
+                Good morning, Friend!
+              </h1>
+              <p class="text-xs text-subtle-debossed font-medium" style="margin-top: 2px;">
+                Enter your thoughts or select a focus prompt below.
+              </p>
+            </div>
+          </div>
+
+          <!-- Quick Suggestion Chips (2x2 Grid) -->
+          <div class="grid grid-cols-2 gap-2" style="margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(170, 185, 199, 0.4);">
+            <button type="button" class="clay-card-pill text-xs font-bold text-left truncate flex items-center gap-1.5 chip-btn" style="padding: 6px 10px; border-radius: 12px; color: #374f63;" data-prompt="Help me organize my top 3 priorities for today.">
+              <span>🌅 Daily Focus</span>
+            </button>
+            <button type="button" class="clay-card-pill text-xs font-bold text-left truncate flex items-center gap-1.5 chip-btn" style="padding: 6px 10px; border-radius: 12px; color: #374f63;" data-prompt="Recommend a calming spatial soundscape for deep study.">
+              <span>🎧 Audio Remedy</span>
+            </button>
+            <button type="button" class="clay-card-pill text-xs font-bold text-left truncate flex items-center gap-1.5 chip-btn" style="padding: 6px 10px; border-radius: 12px; color: #374f63;" data-prompt="Guide me through a quick 2-minute mindful breathing exercise.">
+              <span>🧘 Box Breathing</span>
+            </button>
+            <button type="button" class="clay-card-pill text-xs font-bold text-left truncate flex items-center gap-1.5 chip-btn" style="padding: 6px 10px; border-radius: 12px; color: #374f63;" data-prompt="Share an inspiring, uplifting thought for today.">
+              <span>✨ Spark Clarity</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Messages Scroll Container -->
+        <div id="messages-container" class="messages-scroll flex flex-col gap-3">
+          <!-- Dynamically inserted messages will appear here -->
+        </div>
+
+        <!-- Thinking Indicator -->
+        <div id="thinking-indicator" class="hidden" style="margin-bottom: 8px;">
+          <div class="clay-surface-sm flex items-center gap-1.5" style="display: inline-flex; padding: 10px 14px; border-radius: 16px;">
+            <span class="animate-bounce" style="width: 8px; height: 8px; border-radius: 9999px; background-color: #5fa5b8; animation-delay: 0ms;"></span>
+            <span class="animate-bounce" style="width: 8px; height: 8px; border-radius: 9999px; background-color: #5fa5b8; animation-delay: 150ms;"></span>
+            <span class="animate-bounce" style="width: 8px; height: 8px; border-radius: 9999px; background-color: #5fa5b8; animation-delay: 300ms;"></span>
+            <span class="text-[11px] font-bold" style="color: #62778a; margin-left: 4px;">Aether is thinking...</span>
+          </div>
+        </div>
+
+        <!-- Modern Bottom Input Dock -->
+        <form id="chat-input-form" class="w-full shrink-0" style="margin-top: auto; padding-top: 4px;">
+          <div class="clay-inset rounded-2xl flex items-center gap-3" style="padding: 10px 16px; border: 1px solid rgba(255,255,255,0.2);">
+            <input
+              type="text"
+              id="chat-message-input"
+              autocomplete="off"
+              placeholder="Message Aether, Friend..."
+            />
+            <button
+              type="submit"
+              id="btn-send-message"
+              class="clay-button-cyan flex items-center justify-center shrink-0 cursor-pointer"
+              style="width: 40px; height: 40px; border-radius: 12px; padding: 0;"
+              aria-label="Send message"
+            >
+              <svg style="width: 18px; height: 18px; fill: white; stroke: white; transform: translateX(1px);" viewBox="0 0 24 24">
+                <line x1="22" y1="2" x2="11" y2="13" />
+                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+              </svg>
+            </button>
+          </div>
+        </form>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODALS                                                                -->
+  <!-- ===================================================================== -->
+
+  <!-- 1. Google Sign-In Modal -->
+  <div id="modal-google" class="modal-overlay hidden">
+    <div class="modal-content">
+      <button type="button" class="btn-close-modal clay-surface-sm flex items-center justify-center cursor-pointer" style="position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 9999px; border: none; color: #556c80;">
+        ✕
+      </button>
+      <div class="clay-badge flex items-center justify-center" style="width: 48px; height: 48px; border-radius: 16px; margin: 0 auto 12px auto;">
+        <svg style="width: 24px; height: 24px;" viewBox="0 0 24 24">
+          <path d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z" fill="#ea4335"/>
+          <path d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.2 2.8-2.5 3.7l3.8 3c2.2-2 3.7-5.1 3.7-9z" fill="#4285f4"/>
+          <path d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.8 0-1.2.2-2.1.4-2.8L1.9 6.3C.7 8.7 0 10.3 0 12s.7 3.3 1.9 5.7l3.7-2.9z" fill="#fbbc05"/>
+          <path d="M12 23c3.2 0 6-1.1 8-3l-3.8-3c-1.1.7-2.5 1.2-4.2 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16c1.8 3.7 5.6 7 10.1 7z" fill="#34a853"/>
+        </svg>
+      </div>
+      <h3 class="text-center font-extrabold text-debossed text-lg" style="color: #32485c;">Continue with Google</h3>
+      <p class="text-xs text-center" style="color: #687f94; margin: 4px 0 16px 0;">Enter your Google account to connect instantly</p>
+      
+      <form id="form-google" class="flex flex-col gap-3">
+        <div class="clay-inset rounded-2xl" style="padding: 12px; border: 1px solid rgba(255,255,255,0.2);">
+          <label class="text-[10px] font-bold uppercase" style="color: #556e84; display: block; margin-bottom: 4px;">Your Name</label>
+          <input type="text" id="google-name" required placeholder="e.g. Maya" />
+        </div>
+        <div class="clay-inset rounded-2xl" style="padding: 12px; border: 1px solid rgba(255,255,255,0.2);">
+          <label class="text-[10px] font-bold uppercase" style="color: #556e84; display: block; margin-bottom: 4px;">Gmail / Google Email</label>
+          <input type="email" id="google-email" required placeholder="name@gmail.com" />
+        </div>
+        <div class="clay-inset rounded-2xl" style="padding: 12px; border: 1px solid rgba(255,255,255,0.2);">
+          <label class="text-[10px] font-bold uppercase" style="color: #556e84; display: block; margin-bottom: 4px;">
+            Create Password <span style="font-weight: 400; text-transform: none; color: #879caf;">(optional for direct login)</span>
+          </label>
+          <input type="password" id="google-password" placeholder="Set an account password" />
+        </div>
+        <button type="submit" id="btn-submit-google" class="clay-button-cyan w-full font-bold text-xs uppercase tracking-wider cursor-pointer" style="padding: 12px 0; border-radius: 16px; margin-top: 8px;">
+          Sign In with Google
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Phone Sign-In Modal -->
+  <div id="modal-phone" class="modal-overlay hidden">
+    <div class="modal-content">
+      <button type="button" class="btn-close-modal clay-surface-sm flex items-center justify-center cursor-pointer" style="position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 9999px; border: none; color: #556c80;">
+        ✕
+      </button>
+      <div class="clay-badge flex items-center justify-center" style="width: 48px; height: 48px; border-radius: 16px; margin: 0 auto 12px auto; color: #4c8496;">
+        <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+          <line x1="12" y1="18" x2="12.01" y2="18"/>
+        </svg>
+      </div>
+      <h3 id="phone-modal-title" class="text-center font-extrabold text-debossed text-lg" style="color: #32485c;">Sign In with Phone</h3>
+      <p id="phone-modal-subtitle" class="text-xs text-center" style="color: #687f94; margin: 4px 0 16px 0;">Enter your name and mobile number to continue</p>
+
+      <!-- Step 1: Send OTP -->
+      <div id="phone-step-1" class="flex flex-col gap-3">
+        <div class="clay-inset rounded-2xl" style="padding: 12px; border: 1px solid rgba(255,255,255,0.2);">
+          <label class="text-[10px] font-bold uppercase" style="color: #556e84; display: block; margin-bottom: 4px;">Your Name</label>
+          <input type="text" id="phone-name" placeholder="Enter your name" />
+        </div>
+        <div class="clay-inset rounded-2xl" style="padding: 12px; border: 1px solid rgba(255,255,255,0.2);">
+          <label class="text-[10px] font-bold uppercase" style="color: #556e84; display: block; margin-bottom: 4px;">Phone Number</label>
+          <input type="tel" id="phone-number" required placeholder="+91 98765 43210" />
+        </div>
+        <div class="clay-inset rounded-2xl" style="padding: 12px; border: 1px solid rgba(255,255,255,0.2);">
+          <label class="text-[10px] font-bold uppercase" style="color: #556e84; display: block; margin-bottom: 4px;">
+            Create Password <span style="font-weight: 400; text-transform: none; color: #879caf;">(optional for direct login)</span>
+          </label>
+          <input type="password" id="phone-password" placeholder="Set an account password" />
+        </div>
+        <button type="button" id="btn-send-otp" class="clay-button-cyan w-full font-bold text-xs uppercase tracking-wider cursor-pointer" style="padding: 14px 0; border-radius: 16px; margin-top: 8px;">
+          Send Verification Code
+        </button>
+      </div>
+
+      <!-- Step 2: Verify OTP -->
+      <form id="phone-step-2" class="flex flex-col gap-3 hidden">
+        <div style="padding: 10px; border-radius: 12px; background: rgba(209, 250, 229, 0.8); border: 1px solid #6ee7b7; color: #065f46; font-size: 12px; font-weight: 600; text-align: center;">
+          Verification Code: <span id="display-otp-code" class="font-extrabold tracking-widest text-sm">----</span>
+        </div>
+        <div class="clay-inset rounded-2xl text-center" style="padding: 12px; border: 1px solid rgba(255,255,255,0.2);">
+          <input type="text" id="input-otp" maxlength="4" required placeholder="• • • •" style="text-align: center; letter-spacing: 0.5em; font-size: 18px; font-weight: 700;" />
+        </div>
+        <button type="submit" id="btn-verify-otp" class="clay-button-cyan w-full font-bold text-xs uppercase tracking-wider cursor-pointer" style="padding: 14px 0; border-radius: 16px; margin-top: 8px;">
+          Verify &amp; Enter Chatbot
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. Forgot Password Modal -->
+  <div id="modal-forgot" class="modal-overlay hidden">
+    <div class="modal-content">
+      <button type="button" class="btn-close-modal clay-surface-sm flex items-center justify-center cursor-pointer" style="position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 9999px; border: none; color: #556c80;">
+        ✕
+      </button>
+      <h3 class="text-center font-extrabold text-debossed text-lg" style="color: #32485c;">Reset Password</h3>
+      <p class="text-xs text-center" style="color: #687f94; margin: 4px 0 16px 0;">Enter your email to receive a password reset link.</p>
+
+      <div id="forgot-form-section" class="flex flex-col gap-4">
+        <div class="clay-inset rounded-2xl" style="padding: 14px; border: 1px solid rgba(255,255,255,0.2);">
+          <input type="email" id="forgot-email" placeholder="name@example.com" />
+        </div>
+        <button type="button" id="btn-send-reset" class="clay-button-cyan w-full font-bold text-xs uppercase tracking-wider cursor-pointer" style="padding: 14px 0; border-radius: 16px;">
+          Send Reset Link
+        </button>
+      </div>
+
+      <div id="forgot-success-section" class="clay-surface-sm rounded-2xl text-center flex flex-col gap-2 hidden" style="padding: 16px;">
+        <svg style="width: 32px; height: 32px; color: #4bb390; margin: 0 auto;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p class="text-xs font-bold" style="color: #344d61;">Reset Link Sent!</p>
+        <p id="forgot-sent-msg" class="text-[11px]" style="color: #6d8396;">Check your inbox</p>
+        <button type="button" class="btn-close-modal clay-button-cyan text-xs font-bold cursor-pointer" style="margin-top: 12px; padding: 10px 0; border-radius: 12px; width: 100%;">
+          Back to Sign In
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Help & Info Modal -->
+  <div id="modal-help" class="modal-overlay hidden">
+    <div class="modal-content">
+      <button type="button" class="btn-close-modal clay-surface-sm flex items-center justify-center cursor-pointer" style="position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 9999px; border: none; color: #556c80;">
+        ✕
+      </button>
+      <div class="clay-badge flex items-center justify-center" style="width: 40px; height: 40px; border-radius: 12px; margin: 0 auto 12px auto; color: #4c8496;">
+        <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+      </div>
+      <h3 class="text-center font-extrabold text-debossed text-lg" style="color: #32485c;">Aether Space</h3>
+      <p class="text-xs text-center" style="color: #687f94; margin: 4px 0 16px 0;">Tactile Sound &amp; AI Chatbot Companion</p>
+      
+      <div class="flex flex-col gap-2.5 text-xs" style="color: #4d6377;">
+        <div class="clay-inset rounded-2xl" style="padding: 12px;">
+          <div class="font-bold" style="color: #31475b; margin-bottom: 4px;">🔐 Secure Authentication</div>
+          <p class="text-[11px] leading-relaxed">Sign in easily using Google, Phone Number with SMS code, or Email &amp; Password.</p>
+        </div>
+        <div class="clay-inset rounded-2xl" style="padding: 12px;">
+          <div class="font-bold" style="color: #31475b; margin-bottom: 4px;">🤖 Time-Aware AI Companion</div>
+          <p class="text-[11px] leading-relaxed">Greets you according to the time of day and assists with focus, study, mindfulness, and knowledge.</p>
+        </div>
+        <div class="clay-inset rounded-2xl" style="padding: 12px;">
+          <div class="font-bold" style="color: #31475b; margin-bottom: 4px;">🎧 432Hz Ambient Soundscape</div>
+          <p class="text-[11px] leading-relaxed">Synthesizes soothing frequencies and binaural audio directly in your browser using the Web Audio API.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Frontend Logic Script -->
+  <script src="app.js"></script>
+</body>
+</html>
